@@ -1,0 +1,165 @@
+﻿@model RegistrationPage1.Models.Reg
+
+<h1>Edit</h1>
+
+<h4>Reg</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Firstname" class="control-label">
+                    First Name <span class="text-danger">*</span>
+                </label>
+                <input asp-for="Firstname" class="form-control" />
+                <span asp-validation-for="Firstname" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="Lastname" class="control-label">
+                    Last Name <span class="text-danger">*</span>
+                </label>
+                <input asp-for="Lastname" class="form-control" />
+                <span asp-validation-for="Lastname" class="text-danger"></span>
+            </div>
+            <br>
+             <div class="form-group">
+                <label asp-for="Dateofbirth" class="control-label">
+                    DateofBirth <span class="text-danger">*</span>
+                </label>
+                <input id="DateOfbirth" type="date" asp-for="Dateofbirth" class="form-control" />
+                <span asp-validation-for="Dateofbirth" class="text-danger"></span>
+            </div> 
+            <br>
+           
+            <div>
+                <label asp-for="Hobbies" class="control-label">Hobbies <span class="text-danger">*</span></label> <br>
+                @foreach (var hobby in ViewBag.Hobbies)
+                {
+
+                    <input type="checkbox" name="Hobbie" value="@hobby"
+                    @(ViewBag.SelectedHobbies != null && ViewBag.SelectedHobbies.Contains(hobby) ? "checked" : "") />
+                    @hobby
+
+
+                }
+            </div>
+
+            <br>
+
+              
+
+           
+
+            
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label">
+                    Gender <span class="text-danger">*</span>
+                </label>
+                <br>
+                <label>
+                    @Html.RadioButtonFor(model => model.Gender, "Male") Male
+                </label>
+                <label>
+                    @Html.RadioButtonFor(model => model.Gender, "Female") Female
+                </label>
+                <span asp-validation-for="Gender" text-danger"></span>
+            </div>
+
+            <br>
+            <div class="form-group">
+                <label asp-for="State" class="control-label">
+                    State <span class="text-danger">*</span>
+                </label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+
+            <br>
+            <div class="form-group">
+                <label asp-for="City" class="control-label">
+                    City <span class="text-danger">*</span>
+                </label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+               <label asp-for="FormImageFile">Select a image:</label>
+                <input type="file" id="file" asp-for="FormImageFile" accept=".JPG, .PNG">
+               @*  @if (Model.UploadImage != null)
+                {
+                    <img alt="@Model.UploadImage" src="@Url.Action("GetImage", "Reg", new { fileName = Model.UploadImage })" style="height:300px; width:300px;" />
+                } *@
+                <img alt="@Model.UploadImage" src="@Url.Action("GetImage", "Reg", new { fileName = Model.UploadImage })" style="height:300px; width:300px;" />
+
+               
+            
+            </div>
+
+            
+            <br> <br>
+
+            <div class="form-group">
+                <label asp-for="FormPdfFile">Select a pdf:</label>
+                <input type="file" id="file" asp-for="FormPdfFile" accept=".pdf">
+                
+
+                <img alt="@Model.UploadPdf" src="@Url.Action("GetPdf", "Reg", new { fileName = Model.UploadPdf })" />
+
+
+            </div>
+
+
+
+
+            
+
+            <br><br>
+
+            <div class="form-group">
+                <input type="submit" value="Update" class="btn btn-primary" />
+
+                <input type="reset" value="Reset" class="btn btn-primary" />
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script>
+
+
+    $(document).ready(function () {
+        $("#Dateofbirth").on("input", function () {
+            var selectedDate = new Date($(this).val());
+            var today = new Date();
+            var minDate = new Date();
+            minDate.setFullYear(today.getFullYear() - 100);
+            debugger
+            if (selectedDate > today) {
+                alert("Doesn't Exist");
+                $(this).val("");
+            } else if (selectedDate < minDate) {
+                alert(" Exist");
+                $(this).val("");
+            }
+
+        });
+    });
+
+</script>
+
+
+
+
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,264 @@
+﻿@model RegistrationPage1.Models.Reg
+
+
+ 
+
+<h1>Create</h1>
+
+<h4>Reg</h4>
+<hr />
+<h3 style="color:red">@TempData["Message"]</h3>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+
+@{
+    var HobbyList = ViewBag.Hobbies as List<string>;
+    var AvailableStates = ViewBag.States as List<SelectListItem>;
+}
+
+
+
+
+
+<div class="row">
+    <div class="col-md-4">
+
+        
+        
+            
+        
+        <form asp-action="Create" asp-controller="Reg" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+
+
+            <div class="form-group">
+                <label asp-for="Firstname" class="control-label">
+                    First Name <span class="text-danger">*</span>
+                </label>
+                <input asp-for="Firstname" class="form-control" />
+                <span asp-validation-for="Firstname" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="Lastname" class="control-label">
+                    Last Name<span class="text-danger">*</span>
+                </label>
+                <input asp-for="Lastname" class="form-control" />
+                <span asp-validation-for="Lastname" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="Dateofbirth" class="control-label">
+                    Date of Birth  <span class="text-danger">*</span>
+                </label>
+                <input type="date" asp-for="Dateofbirth" class="form-control" />
+                <span asp-validation-for="Dateofbirth" class="text-danger"></span>
+            </div>
+            <br>
+
+
+            <div>
+                <label class="control-label">State Name </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                <select id="SelectedState" asp-for="StateID" asp-items="AvailableStates">
+                    <option value="">--Select a state--</option>
+                </select><br />
+                <span asp-validation-for="StateID" class="text-danger"></span>
+            </div>
+            <br>
+            <div>
+                <label class="control-label">City Name</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select id="cityDropdown" asp-for="CityID" style="width:140px">
+                    <option value="">--Select a city--</option>
+                </select><br />
+                <span asp-validation-for="CityID" class="text-danger"></span>
+                <input type="hidden" asp-for="CityID" />
+            </div>
+
+            
+
+
+
+            <div>
+                <label asp-for="Hobbies" class="control-label">Hobbies <span asp-validation-for="Hobbie" class="text-danger">*</span></label>
+                <br>
+                @if (ViewBag.Hobbies != null)
+                {
+
+
+                    @foreach (var hobby in ViewBag.Hobbies)
+                    {
+
+                        <input type="checkbox" name="Hobbie" value="@hobby"
+                        @(ViewBag.SelectedHobbies != null && ViewBag.SelectedHobbies.Contains(hobby) ? "unchecked" : "") />
+                        @hobby
+
+
+                    }
+                }
+
+                else
+                {
+                    <p>No hobbies available</p>
+                }
+                @*     <span asp-validation-for="Hobbies" class="text-danger"></span> *@
+            </div>
+            <br>
+
+           
+
+
+            
+
+
+
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label">
+                    Gender  <span class="text-danger">*</span>
+                </label>
+               <br>
+                <label>
+                    @Html.RadioButtonFor(model => model.Gender, "Male") Male
+                </label>
+                <label>
+                    @Html.RadioButtonFor(model => model.Gender, "Female") Female
+                </label>
+                <span asp-validation-for="Gender" text-danger"></span>
+            </div>
+
+            <br>
+            
+            <div class="form-group">
+                <label asp-for="State" class="control-label">
+                    State  <span class="text-danger">*</span>
+                </label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+
+            
+
+
+            <br>
+            
+            <div class="form-group">
+                <label asp-for="City" class="control-label">
+                    City <span class="text-danger">*</span>
+                </label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div> 
+            <br>
+
+
+            <label asp-for="FormImageFile" class="control-label">Select a image:</label>
+            <input type="file" id="file" asp-for="FormImageFile" accept=".JPG, .PNG">
+            <img id="selectedImage" src="#" alt="Selected Image" style="max-width: 200px; display: none;">
+            <button id="clearImageButton" style="display: none;">Clear</button>
+
+
+            <br>
+            
+           
+            <label asp-for="FormPdfFile">Select a pdf:</label>
+            <input type="file" id="file" asp-for="FormPdfFile"  accept=".pdf">
+         
+
+            <br>
+            
+
+            
+            
+           
+
+
+
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+
+                
+                <input type="reset" value="Clear" class="btn btn-primary" />
+
+
+            </div>
+
+
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+
+
+<script>
+
+
+    $(document).ready(function () {
+        $("#Dateofbirth").on("input", function () {
+            var selectedDate = new Date($(this).val());
+            var today = new Date();
+            var minDate = new Date();
+            minDate.setFullYear(today.getFullYear() - 100);
+            debugger
+            if (selectedDate > today) {
+                alert("Doesn't Exist");
+                $(this).val("");
+            } else if (selectedDate < minDate) {
+                alert(" Exist");
+                $(this).val("");
+            }
+
+        });
+    });
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        
+        var stateDropdown = $("#SelectedState");
+        var cityDropdown = $("#cityDropdown");
+       
+        stateDropdown.change(function () {
+            var selectedState = stateDropdown.val();
+            var stateName = stateDropdown.find("option:selected").text();
+           
+            $.ajax({
+                type: "GET",
+                url: "/Reg/GetCities",
+                data: { StateID: selectedState },
+                success: function (data) {
+                    console.log(data);
+                    cityDropdown.empty();
+                    $.each(data, function (index, item) {
+                        console.log(item);
+                        cityDropdown.append($('<option>', {
+                            value: item.Value,
+                            text: item.Text
+                        }));
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/JavaScript.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Employee</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        .bs-example {
+            margin: 20px;
+        }
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        
+
+        <form method="get" action="@Url.Action("Details")">
+    <div class="input-group" style="width: 400px; margin: 10px;">
+        <input type="search" class="form-control" placeholder="Search..." name="searchData" value="@Model.SearchTerm">
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a asp-action="Details" asp-controller="Reg" class="btn btn-secondary">Reset</a>
+        </div>
+    </div>
+            <div class="form-group" style="margin-left: 10px;width:150px">
+                <label for="RecordsPerPage" style="font-weight: bold; ">Records Per Page:</label>
+                 <select id="RecordsPerPageDropdown" name="RecordsPerPage" class="form-control">
+            @for (int i = 3; i <= 15; i += 3)
+            {
+                        <option id="RecordsPerPage" value="@i">@i</option>
+            }
+          </select>
+       </div>
+    </form>
+
+        <br>
+       
+        <div class="pagination">
+            @if (Model.TotalRecords > Model.RecordsPerPage)
+            {
+                if (Model.CurrentPage > 1)
+                {
+                    <a href="@Url.Action("Details", new { CurrentPage = Model.CurrentPage - 1, RecordsPerPage = Model.RecordsPerPage })" class="btn btn-primary">Previous</a>
+                }
+            }
+            @if (Model.TotalRecords > 0)
+            {
+                @for (int i = 1; i <= Math.Ceiling((double)Model.TotalRecords / Model.RecordsPerPage); i++)
+                {
+                    if (Model.CurrentPage == i)
+                    {
+                        <span class="btn btn-primary active">@i</span>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Details", new { CurrentPage = i, RecordsPerPage = Model.RecordsPerPage })" class="btn btn-primary">@i</a>
+                    }
+                }
+                @if (Model.CurrentPage < Math.Ceiling((double)Model.TotalRecords / Model.RecordsPerPage))
+                {
+                    <a href="@Url.Action("Details", new { CurrentPage = Model.CurrentPage + 1, RecordsPerPage = Model.RecordsPerPage })" class="btn btn-primary">Next</a>
+                }
+            }
+        </div>
+
+        <br>
+        <a asp-action="Create" asp-controller="Reg" class="btn btn-success">Register</a>
+        <div class="bs-example">
+            <table class="table table-bordered table-responsive" >
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">Serial No</th>
+                        <th style="width: 10%;">First Name</th>
+                        <th style="width: 10%;">Last Name</th>
+                        <th style="width: 5%;">Gender</th>
+                        <th style="width: 10%;">DOB</th>
+                        <th style="width: 100%;">Hobbies</th>
+                        <th style="width: 10%;">State</th>
+                        <th style="width: 10%;">City</th>
+                        <th style="width: 10%;">Image</th>
+                        <th style="width: 10%;">Pdf</th>
+                        <th style="width: 5%;">Edit</th>
+                        <th style="width: 5%;">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.Data)
+                    {
+                        <tr>
+                            <td>@r.SerialNo</td>
+                            <td>@r.Firstname</td>
+                            <td>@r.Lastname</td>
+                            <td>@r.Gender</td>
+                            <td>@r.Dateofbirth</td>
+                            <td style="white-space: nowrap;">@r.Hobbies</td>
+                            <td>@r.State</td>
+                            <td>@r.City</td>
+                          
+                            <td style="white-space: nowrap;">
+                                <a asp-action="DownloadFile" asp-controller="Reg" asp-route-fileName="@r.UploadImage">
+                                    <img src="@r.UploadImage" alt="Image" style="height:100px; width:100px">
+                                </a>
+                            </td>
+
+                            <td style="white-space: nowrap;"><a asp-action="DownloadFile" asp-controller="Reg" asp-route-fileName="@r.UploadPdf">@r.UploadPdf</a></td>
+
+                            
+
+                            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Confirm Delete</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this record?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <a id="confirmDeleteButton" href="#" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <td><a asp-action="Edit" asp-controller="Reg" asp-route-id="@r.Id" class="btn btn-warning">Edit</a></td>
+                            @* <td><a asp-action="Delete" asp-controller="Reg" asp-route-id="@r.Id" class="btn btn-danger">Delete</a></td> *@
+                            <td>
+                                <a href="#" data-toggle="modal" data-target="#confirmDeleteModal" data-id="@r.Id" class="btn btn-danger delete-record">Delete</a>
+                                @* <a asp-action="Delete" asp-controller="Reg" asp-route-id="@r.Id" class="btn btn-danger">Delete</a> *@
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                
+            </table>
+
+
+
+            @if (Model.TotalRecords > 0)
+            {
+                int startRecord = (Model.CurrentPage - 1) * Model.RecordsPerPage + 1;
+                int endRecord = Model.CurrentPage * Model.RecordsPerPage;
+                endRecord = Math.Min(endRecord, Model.TotalRecords);
+
+                string recordText;
+
+                if (startRecord == endRecord && Model.TotalRecords == 1)
+                {
+                    recordText = "Record";
+                }
+                else
+                {
+                    recordText = "Records";
+                }
+
+                <p style="text-align: center;">@recordText @startRecord to @endRecord out of @Model.TotalRecords</p>
+            }
+
+            
+           
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function () {
+
+        $('.delete-record').click(function () {
+            var recordId = $(this).data('id');
+
+        $('#confirmDeleteButton').attr('href', '/Employee/Delete/' + recordId);
+        });
+    });
+</script>
+
+
+
+</html>
+
+
+
+
+
